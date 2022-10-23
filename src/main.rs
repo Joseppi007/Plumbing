@@ -44,7 +44,8 @@ impl fmt::Display for Group {
 pub enum Value {
    Frac(Frac),
    String(String),
-   Group(Group)
+   Group(Group),
+   Func(Func)
 }
 
 impl fmt::Display for Value {
@@ -52,7 +53,8 @@ impl fmt::Display for Value {
         match self {
             Value::Frac(fr) => write!(f, "{}", fr),
             Value::String(s) => write!(f, "{}", s),
-            Value::Group(g) => write!(f, "{}", g)
+            Value::Group(g) => write!(f, "{}", g),
+            Value::Func(c) => write!(f, "{}", c)
         }
     }
 }
@@ -68,12 +70,21 @@ pub fn run(code: String) {
 fn main() {
     println!("You are a plumber, now.\nDo some plumbing.\nAnd by that I mean code.\n\n");
     loop {
-        print!("\n> ");
+        print!("\n> \x1b[1m\x1b[38;02;255;255;100m");
         std::io::stdout().flush().unwrap();
         let mut s = String::new();
         std::io::stdin().read_line(&mut s).expect("A command to run");
+        print!("\x1b[0m");
+        std::io::stdout().flush().unwrap();
         s = s.trim().to_string();
-        let v: Value = eval(s);
-        println!("Result: {}", v);
+        if s == "".to_string() {
+            print!("\x1b[2J\x1b[1;1H");
+            std::io::stdout().flush().unwrap();
+        } else if s == "quit".to_string() || s == "exit".to_string() {
+            break;
+        } else {
+            let v: Value = eval(s);
+            println!("Result: \x1b[38;02;100;255;100m{}\x1b[0m", v);
+        }
     }
 }
